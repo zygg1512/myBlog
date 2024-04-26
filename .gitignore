@@ -1,0 +1,4 @@
+.DS_Store
+node_modules
+static/cache
+**/.DS_Store

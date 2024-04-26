@@ -1,0 +1,303 @@
+# CommonJS规范
+## 概述
+CommonJS模块的特点如下
+- 所有代码都运行在模块作用域，不会污染全局作用域。
+- CommonJS 是被加载的时候运行；加载的是值的浅拷贝。
+- 模块可以多次加载，但是只会在第一次加载时运行一次，然后运行结果就被缓存了，以后再加载，就直接读取缓存结果。要想让模块再次运行，必须清除缓存。
+- 模块加载的顺序，按照其在代码中出现的顺序。
+## Module 对象
+Node 内部提供一个 Module 构建函数。所有模块都是 Module 的实例。
+
+每个模块内部，都有一个`module`对象，代表当前模块。它有以下属性。
+- `module.id`模块的识别符，通常是带有绝对路径的模块文件名。
+- `module.filename`模块的文件名，带有绝对路径。
+- `module.loaded`返回一个布尔值，表示模块是否已经完成加载。
+- `module.parent`返回一个对象，表示调用该模块的模块。
+- `module.children`返回一个数组，表示该模块要用到的其他模块。
+- `module.exports`表示模块对外输出的值。
+
+```javascript
+const jquery = require('jquery')
+exports.$ = jquery
+console.log(module)
+```
+执行上述代码，最终输出
+
+```text
+{
+  id: '.',
+  exports: { '$': [Function] },
+  parent: null,
+  filename: '/path/to/example.js',
+  loaded: false,
+  children:
+   [ { id: '/path/to/node_modules/jquery/dist/jquery.js',
+       exports: [Function],
+       parent: [Circular],
+       filename: '/path/to/node_modules/jquery/dist/jquery.js',
+       loaded: true,
+       children: [],
+       paths: [Object] } ],
+  paths:
+   [ '/home/user/deleted/node_modules',
+     '/home/user/node_modules',
+     '/home/node_modules',
+     '/node_modules' ]
+}
+```
+### `module.parent`属性
+- 如果通过`node`命令直接执行，那么`module.parent`就是`null`。
+- 如果是在其他脚本中通过`require('./something.js')`的方式执行，那么`module.parent`就是调用它的模块。
+
+利用这一点，可以判断当前模块是否为入口脚本。
+```javascript
+if (!module.parent) {
+    // run with `node something.js`
+} else {
+    // used with `require('/.something.js')`
+    module.exports = app
+}
+```
+### `module.exports`属性
+`module.exports`属性：当前模块对外输出的内容，其他文件加载该模块，实际上就是读取`module.exports`。
+```javascript
+const EventEmitter = require('events').EventEmitter
+module.exports = new EventEmitter()
+
+setTimeout(function() {
+  module.exports.emit('ready')
+}, 1000)
+```
+上面模块会在加载完成的1秒后，发出`ready`事件。其他文件监听该事件，可以写成下面这样。
+```javascript
+const a = require('./a')
+a.on('ready', function() {
+  console.log('module a is ready')
+})
+```
+#### `exports`变量
+为了方便，Node为每个模块提供一个`exports`变量，指向`module.exports`。这等同在每个模块头部，有一行这样的命令。
+```javascript
+const exports = module.exports
+```
+在对外输出模块接口时，可以向`exports`对象添加方法
+```javascript
+exports.a = 123
+```
+注意，不能直接将`exports`变量指向一个值，因为这样等于切断了`exports`与`module.exports`的联系。
+
+下面这两种写法是无效的，因为`exports`不再指向`module.exports`了。
+```javascript
+// 一
+exports = function(x) {console.log(x)}
+
+// 二
+exports.hello = function() {
+  return 'hello'
+}
+module.exports = 'Hello world'
+```
+
+## 模块加载流程
+详细流程图如下：
+
+<img src="https://user-images.githubusercontent.com/15315816/50043408-98d64700-00ae-11e9-82c8-698f3118c3c4.png" width="800px" />
+
+每个模块实例都有一个`require`方法。
+```javascript
+Module.prototype.require = function(path) {
+  return Module._load(path, this)
+}
+```
+由此可知，`require`并不是全局性命令，而是每个模块提供的一个内部方法，也就是说，只有在模块内部才能使用`require`命令。另外，`require`其实内部调用`Module._load`方法。
+```javascript
+Module._load = function(request, parent, isMain) {
+  // 计算绝对路径
+  const filename = Module._resolveFilename(request, parent)
+
+  // 第一步：如果有缓存，取出缓存
+  const cachedModule = Module._cache[filename]
+  if (cachedModule) {
+    return cachedModule.exports
+
+  // 第二步：是否为内置模块
+  if (NativeModule.exists(filename)) {
+    return NativeModule.require(filename)
+  }
+
+  // 第三步：生成模块实例，存入缓存
+  const module = new Module(filename, parent)
+  Module._cache[filename] = module
+
+  // 第四步：加载模块
+  try {
+    module.load(filename)
+    hadException = false
+  } finally {
+    if (hadException) {
+      delete Module._cache[filename]
+    }
+  }
+
+  // 第五步：输出模块的 exports 属性
+  return module.exports
+}
+```
+具体流程如下：
+1. 解析导入模块的绝对路径
+2. 检查`Module._cache`，是否缓存中有指定模块
+   1. 如果有缓存，则直接返回缓存中的被导入的`Module`对象
+3. 如果缓存中没有，判断是否是内置模块
+   1. 如果是，则直接加载并返回内置模块
+4. 如果不是，就创建一个新的`Module`实例，并将其添加到缓存
+5. 使用`module.load()`加载被导入模块
+6. 如果加载/解析过程报错，就从缓存删除该模块
+7. 最终，返回被导入模块的`module.exports`
+
+### 解析绝对路径
+Node 通过 `Module._resolveFilename`方法解析被导入模块的绝对路径。流程如下：
+```text
+1. 如果 X 是内置模块，直接返回模块路径，不再继续执行。比如`require('http')`。
+2. 如果 X 以 "./" 或者 "/" 或者 "../" 开头
+   2-1. 根据 X 所在的父模块，确定 X 的绝对路径。
+      2-1-1. 从当前路径开始一级级向上寻找，查看每层`node_modules`目录下有没有该模块。
+   2-2. 将 X 当成文件，依次查找下面文件，只要其中有一个存在，就返回该文件，不再继续执行。
+      2-2-1. X
+      2-2-2. X.js
+      2-2-3. X.json
+      2-2-4. X.node
+   2-3. 将 X 当成目录，依次查找下面文件，只要其中有一个存在，就返回该文件，不再继续执行。
+      2-3-1. X/package.json（main字段）
+      2-3-2. X/index.js
+      2-3-3. X/index.json
+      2-3-4. X/index.node
+3. 如果 X 不带路径
+   3-1. 根据 X 所在的父模块，确定 X 可能的安装目录。
+       3-1-1. 从当前路径开始，一级级向上寻找，查看每层`node_modules`目录下有没有该目录。
+   3-2. 依次在每个目录中，将 X 当成文件名或目录名加载。
+4. 抛出 "not found"
+```
+比如当前脚本文件`/home/ry/projects/foo.js`执行了`require('bar')`，这属于上面的第`3`种情况。Node 内部运行过程如下。
+
+首先，确定 X 的绝对路径可能是下面这些位置，依次搜索每一个目录。
+```text
+/home/ry/projects/node_modules/bar
+/home/ry/node_modules/bar
+/home/node_modules/bar
+/node_modules/bar
+```
+搜索时，Node 先将`bar`当成文件名，依次尝试加载下面这些文件，只要有一个成功就返回。
+```text
+bar
+bar.js
+bar.json
+bar.node
+```
+如果都不成功，说明`bar`可能是目录名，于是依次尝试加载下面这些文件。
+```text
+bar/package.json（main字段）
+bar/index.js
+bar/index.json
+bar/index.node
+```
+如果在所有目录中，都无法找到 bar 对应的文件或目录，就抛出一个错误。
+
+### 加载模块
+有了模块的绝对路径，就可以加载该模块了。Node 通过`module.load`方法加载模块。
+```text
+1. 首先确定模块的后缀名，不同的后缀名对应不同的加载方法。以 js 文件的加载为例：
+    1-1. 首先，将模块文件读取成字符串
+    1-2. 然后剥离 utf8 编码特有的BOM文件头，最后编译该模块。
+2. 生成一个 require 函数，指向被导入模块的 module.require 方法
+2. 加载其他辅助方法到 require
+3. 将文件内容放到一个新函数中，该函数的参数包括 require、module、exports，以及其他一些参数。
+4. 执行新函数，将导出内容挂载到 exports 上
+```
+最后生成函数如下
+```javascript
+(function (exports, require, module, __filename, __dirname) {
+  // 被导入模块的源码
+})
+```
+也就是说，模块的加载实质上就是，注入`exports`、`require`、`module`三个全局变量，然后执行模块的源码。并将导出内容挂载到`exports`上。
+
+#### `require`辅助方法
+加载模块时会生成`require`函数及其辅助方法，主要如下：
+- `require()`：加载外部模块
+- `require.resolve()`：将模块名解析到一个绝对路径
+- `require.main`：返回入口模块的 Module 实例
+- `require.cache`：指向所有缓存的模块
+- `require.extensions`：根据文件的后缀名，调用不同的执行函数
+
+## 模块缓存机制
+第一次加载某个模块时，Node 会缓存该模块。以后再加载该模块，就直接从缓存取出该模块的`module.exports`属性。
+```javascript
+require('./example.js')
+require('./example.js').message = "hello"
+require('./example.js').message
+```
+上面代码中，连续三次使用`require`命令，加载同一个模块。第二次加载的时候，为输出的对象添加了一个`message`属性。但是第三次加载的时候，这个`message`属性依然存在，这就证明`require`命令并没有重新加载模块文件，而是输出了缓存。
+
+如果想要多次执行某个模块，可以让该模块输出一个函数，然后每次`require`这个模块的时候，重新执行一下输出的函数。
+
+所有缓存的模块保存在`require.cache`之中，如果想删除模块的缓存，可以像下面这样写。
+```javascript
+// 删除指定模块的缓存
+// moduleName 必须是一个绝对路径
+delete require.cache[moduleName]
+
+// 删除所有模块的缓存
+Object.keys(require.cache).forEach(function(key) {
+  delete require.cache[key]
+})
+```
+>注意，缓存是根据绝对路径识别模块的，如果同样的模块名，但是保存在不同的路径，`require`命令还是会重新加载该模块。
+
+## 模块循环加载
+CommonJS 模块的重要特性是加载时执行，即脚本代码在`require`的时候，就会全部执行。
+
+而对于循环加载的情况，CommonJS 的做法是，一旦出现某个模块被"循环加载"，就只输出已经执行的部分，还未执行的部分不会输出。
+
+`a.js`代码如下：
+```javascript
+exports.done = false
+const b = require('./b.js')
+console.log('在 a.js 之中，b.done = %j', b.done)
+exports.done = true
+console.log('a.js 执行完毕')
+```
+上面代码之中，`a.js`先输出一个`done`变量，然后加载`b.js`。注意，此时`a.js`代码就停在这里，等待`b.js`执行完毕，再往下执行。
+
+`b.js`代码如下
+```javascript
+exports.done = false
+const a = require('./a.js')
+console.log('在 b.js 之中，a.done = %j', a.done)
+exports.done = true
+console.log('b.js 执行完毕')
+```
+上面代码之中，`b.js`执行到第二行，就会去加载`a.js`，这时，系统会去`a.js`的`exports`属性取值，可是因为`a.js`还没有执行完，从`exports`属性只能取回已经执行的部分，而不是最后的值。
+
+a.js已经执行的部分，只有一行。
+```javascript
+exports.done = false
+```
+因此，对于`b.js`来说，它从`a.js`只输入一个变量`done`，值为`false`。
+
+然后，`b.js`接着往下执行，等到全部执行完毕，再把执行权交还给`a.js`。于是，`a.js`接着往下执行，直到执行完毕。
+
+
+`main.js`代码如下：
+```javascript
+const a = require('./a.js')
+const b = require('./b.js')
+console.log('在 main.js 之中, a.done=%j, b.done=%j', a.done, b.done)
+```
+执行后输出：
+```text
+在 b.js 之中，a.done = false
+b.js 执行完毕
+在 a.js 之中，b.done = true
+a.js 执行完毕
+在 main.js 之中, a.done=true, b.done=true
+```
