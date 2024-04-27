@@ -1,7 +1,7 @@
 ## 概述
 Shell 是一个命令行解释器，她接收应用程序/用户命令，然后调用操作系统内核
 
-<img height="300px" src="https://github.com/zygg1512/myBlog/raw/master/assets/linux/shell原理.png" />
+<img height="300px" src="https://github.com/zygg1512/myBlog/raw/master/images/linux/shell原理.png" />
 
 ## 脚本基础
 脚本以`#!/bin/bash`开头（指定解析器）

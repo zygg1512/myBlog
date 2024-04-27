@@ -10,7 +10,7 @@ DNS是Domain Name System的缩写，翻译成中文就是“域名系统”。**
 
 各级域名由其上一级的域名管理机构管理，而最高级的顶级域名则由**ICANN**进行管理
 
-<img src="https://github.com/zygg1512/myBlog/raw/master/assets/http/dns/域名结构.png" />
+<img src="https://github.com/zygg1512/myBlog/raw/master/images/http/dns/域名结构.png" />
 
 ## 域名服务器
 
@@ -22,14 +22,14 @@ DNS域名服务器也是按照层次划分的，每一个域名服务器都只�
 
 上面三种服务器的关系可以用这张图表示：
 
-<img src="https://github.com/zygg1512/myBlog/raw/master/assets/http/dns/DNS服务器关系.png" />
+<img src="https://github.com/zygg1512/myBlog/raw/master/images/http/dns/DNS服务器关系.png" />
 
 - **本地域名服务器：** 这类服务器不属于上面的层次结构，当一个主机(个人电脑)发出DNS请求时，查询请求就被发送到本地域名服务器，本地域名服务器负责回答这个查询，或者代替主机向域名空间中不同层次的权威域名服务器查询，再把查询的结果返回给主机。
     - 每个ISP(Internet Service Provider的缩写，即互联网服务提供商)都有一台本地DNS服务器，比如一个居民区的 ISP、一个大学的 ISP、一个机构的 ISP，都有一台或多台本地 DNS 服务器。
 
 
 ## DNS查询过程
-<img height="500px" src="https://github.com/zygg1512/myBlog/raw/master/assets/http/dns/域名查找方式.png" />
+<img height="500px" src="https://github.com/zygg1512/myBlog/raw/master/images/http/dns/域名查找方式.png" />
 
 **（1）查看浏览器缓存**
 
@@ -72,12 +72,12 @@ DNS 查询有两种方式：**递归查询** 和 **迭代查询** 。
 #### 递归查询
 一般来说，DNS 客户端设置使用的 DNS 服务器一般都是 **递归查询** ，它负责全权处理客户端的 DNS 查询请求，直到返回最终结果
 
-<img height="400px" src="https://github.com/zygg1512/myBlog/raw/master/assets/http/dns/dns递归查找.png" />
+<img height="400px" src="https://github.com/zygg1512/myBlog/raw/master/images/http/dns/dns递归查找.png" />
 
 #### 迭代查询
 而 DNS 根域名服务器之间一般采用 **迭代查询** 方式，以免根域名服务器的压力过大；这些远程查询都是基于UDP协议，通常使用 53 号端口。
 
-<img height="400px" src="https://github.com/zygg1512/myBlog/raw/master/assets/http/dns/dns迭代查找.png" />
+<img height="400px" src="https://github.com/zygg1512/myBlog/raw/master/images/http/dns/dns迭代查找.png" />
 
 
 ### 为什么选择基于 UDP 协议发起 DNS 查询，而不是 TCP？
