@@ -1,10 +1,14 @@
-import { SidebarItem } from './generatorSideBars'
+import { SidebarBars } from './generatorSideBars'
 import { readFileSync, writeFileSync } from 'fs'
 import { resolve } from 'path'
 
-function generatorHomePages(sideBars: SidebarItem[]) {
+function generatorHomePages(sideBars: SidebarBars) {
+    const sideBarNames = Object.keys(sideBars)
     let featuresMd: string = ''
-    for (const sideBar of sideBars) {
+    for (const sideBarName of sideBarNames) {
+        const sideBarInfos = sideBars[sideBarName]
+        if (!Array.isArray(sideBarInfos) || !sideBarInfos.length) continue
+        const sideBar = sideBarInfos[0]
         const { text } = sideBar
         let _sideBar = sideBar
         while (_sideBar.items && _sideBar.items.length) {

@@ -1,6 +1,6 @@
 import { readdirSync, statSync } from 'fs'
 import { resolve } from 'path'
-export type SidebarItem = {
+export interface SidebarItem {
     text?: string
     link?: string
     items?: SidebarItem[]
@@ -10,31 +10,57 @@ export type SidebarItem = {
     rel?: string
     target?: string
 }
-function generatorSideBars(root) {
-    const rootDir = resolve(__dirname, '../../src', root)
+export interface SidebarBars {
+    [key: string]: SidebarItem[]
+}
+
+function resolveRootDir(root) {
+    return resolve(__dirname, '../../src', root)
+}
+function generatorSideBars(root): SidebarBars {
+    const rootDir = resolveRootDir(root)
     const files = readdirSync(rootDir)
-    const sideBars: SidebarItem[] = []
+    const sideBars: SidebarBars = {}
+    for (const file of files) {
+        const fileDir = resolve(rootDir, file)
+        const fileStats = statSync(fileDir)
+        const isDir = fileStats.isDirectory()
+        if (!isDir) continue
+        const route = `/${root}/${file}/`
+        sideBars[route] = [
+            {
+                text: file,
+                items: generatorsideItems(`${root}/${file}`)
+            }
+        ]
+    }
+    return sideBars
+}
+function generatorsideItems(root: string): SidebarItem[] {
+    const rootDir = resolveRootDir(root)
+    const files = readdirSync(rootDir)
+    const sidebarItems: SidebarItem[] = []
     for (const file of files) {
         const fileDir = resolve(rootDir, file)
         const fileStats = statSync(fileDir)
         const isDir = fileStats.isDirectory()
         if (isDir) {
-            const items = generatorSideBars(`${root}/${file}`)
+            const items = generatorsideItems(`${root}/${file}`)
             const sidebarItem: SidebarItem = {
                 text: file,
                 items,
                 collapsed: true
             }
-            sideBars.push(sidebarItem)
+            sidebarItems.push(sidebarItem)
         } else if (computedFileExtension(file) === 'md') {
             const sidebarItem: SidebarItem = {
                 text: file,
                 link: `/${root}/${file}`
             }
-            sideBars.push(sidebarItem)
+            sidebarItems.push(sidebarItem)
         }
     }
-    return sideBars
+    return sidebarItems
 }
 function computedFileExtension(file) {
     return file.slice(file.lastIndexOf('.') + 1)

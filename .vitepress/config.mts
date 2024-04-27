@@ -4,6 +4,7 @@ import generatorHomePages from './scripts/generatorHomePages'
 import { resolve } from 'path'
 const sidebar = generatorSideBars('blogs')
 generatorHomePages(sidebar)
+
 export default defineConfig({
     title: 'MyBlog',
     description: 'Blog For Zygg',
