@@ -12,8 +12,8 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
-        "vitepress": "^1.1.3",
-        "@types/node": "^20.12.7"
+        "@types/node": "^20.12.7",
+        "vitepress": "^1.1.3"
     },
     "engines": {
         "node": ">=18.0.0"
@@ -25,5 +25,9 @@
                 "search-insights"
             ]
         }
+    },
+    "dependencies": {
+        "medium-zoom": "^1.1.0",
+        "vue": "^3.4.25"
     }
 }

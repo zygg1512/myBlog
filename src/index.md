@@ -11,8 +11,10 @@ hero:
 
 features:
 
-    - title: V8引擎
-      link: /blogs/V8引擎/JavaScript设计思想/1. 对象设计思想.md
+    - title: Node
+      link: /blogs/Node/package配置项/1. package配置项.md
+    - title: V8引擎原理
+      link: /blogs/V8引擎原理/JavaScript设计思想/1. 对象设计思想.md
     - title: 前端基础
       link: /blogs/前端基础/JavaScript/Web Worker.md
     - title: 常用命令
