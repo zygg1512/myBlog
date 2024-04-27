@@ -8,6 +8,7 @@ export default defineConfig({
     title: 'MyBlog',
     description: 'Blog For Zygg',
     head: [['link', { rel: 'icon', href: '/favicon.ico' }]],
+    base: '/myBlog/',
     outDir: resolve(__dirname, '../static/dist'),
     cacheDir: resolve(__dirname, '../static/cache'),
     srcDir: 'src',
