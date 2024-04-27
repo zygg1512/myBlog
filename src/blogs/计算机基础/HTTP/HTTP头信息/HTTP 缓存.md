@@ -85,7 +85,7 @@ HTTP/1.0与HTTP/1.1可根据缓存类别区分如下：
 
 下一次请求时，客户端判断当前系统GMT​时间是否小于缓存携带的GMT时间。若小于，直接使用缓存数据，否则从服务器请求新的文件。
 
-<img src="https://gitee.com/CwdyBic/myBlog/raw/master/assets/http/性能HTTP头信息化/Expires.png" height="400px" />
+<img src="https://github.com/zygg1512/myBlog/raw/master/assets/http/性能HTTP头信息化/Expires.png" height="400px" />
 
 #### Expires 缺陷
 - 使用客户端获取的GMT​时间与服务器GMT时间作比较，如果客户端主动修改了系统时间，就会出现缓存命中的误差。
@@ -104,12 +104,12 @@ HTTP/1.0与HTTP/1.1可根据缓存类别区分如下：
 #### no-store
 直接禁止浏览器缓存数据，每次请求资源都会向服务器要完整的资源。具有HTTP缓存的最高优先级。
 
-<img src="https://gitee.com/CwdyBic/myBlog/raw/master/assets/http/性能HTTP头信息化/no-store.png" height="500px" />
+<img src="https://github.com/zygg1512/myBlog/raw/master/assets/http/性能HTTP头信息化/no-store.png" height="500px" />
 
 #### no-cache
 不使用强制缓存。每次进行响应前都向服务器进行缓存有效性验证。即不使用本地缓存。需要使用协商缓存。
 
-<img src="https://gitee.com/CwdyBic/myBlog/raw/master/assets/http/性能HTTP头信息化/no-cache.png" height="500px" />
+<img src="https://github.com/zygg1512/myBlog/raw/master/assets/http/性能HTTP头信息化/no-cache.png" height="500px" />
 
 #### public
 公共缓存。任何从源服务器到客户端中的每个节点都可以对资源进行缓存。
@@ -118,7 +118,7 @@ HTTP/1.0与HTTP/1.1可根据缓存类别区分如下：
 #### max-age
 客户端缓存存储的最长时间，单位秒。判断的优先级高于Expires​，客户端会判断资源已缓存的时长是否小于设置的`max-age`​时长。是则直接使用缓存数据，否则会进行Expires的判断流程。
 
-<img src="https://gitee.com/CwdyBic/myBlog/raw/master/assets/http/性能HTTP头信息化/max-age.png" height="500px" />
+<img src="https://github.com/zygg1512/myBlog/raw/master/assets/http/性能HTTP头信息化/max-age.png" height="500px" />
 
 #### s-maxage
 代理缓存服务器最长的缓存时间，单位秒。优先级高于`max-age`和`Expires`，仅适用于缓存服务器。
@@ -138,7 +138,7 @@ HTTP/1.0与HTTP/1.1可根据缓存类别区分如下：
 
 协商缓存会先判断请求头中是否携带`no-store`。如果携带，则直接返回最新的服务器文件。
 
-<img src="https://gitee.com/CwdyBic/myBlog/raw/master/assets/http/性能HTTP头信息化/对比缓存.png" height="500px" />
+<img src="https://github.com/zygg1512/myBlog/raw/master/assets/http/性能HTTP头信息化/对比缓存.png" height="500px" />
 
 ### HTTP/1.0 - Last-Modified
 客户端第一次向服务器请求资源时，服务器会返回资源。同时会在响应头中添加`Last-Modified`​字段来表明资源的最后修改时间。当客户端强制缓存失效后，会重新向服务器进行缓存有效性验证。
@@ -160,7 +160,7 @@ last-modified: Sat, 14 Jan 2023 08:40:00 GMT
 
 有别于`If-Modified-Since`，`If-Unmodified-Since`​被用于POST​或其他非简单请求。如果在`If-Unmodified-Since`​指定的时间内有过修改，则返回412(Precondition Failed)。
 
-<img src="https://gitee.com/CwdyBic/myBlog/raw/master/assets/http/性能HTTP头信息化/If-Unmodified-Since​.png" height="500px" />
+<img src="https://github.com/zygg1512/myBlog/raw/master/assets/http/性能HTTP头信息化/If-Unmodified-Since​.png" height="500px" />
 
 #### Last-Modified 缺陷
 - `Last-Modified`只关注文件的最后修改时间，和文件内容无关。所以文件内容在修改后又重新恢复，也会导致文件的最后修改时间改变。此时客户端的请求则无法使用缓存。
@@ -212,7 +212,7 @@ if-none-match: "I82YRPyDtSi45r0Ps/eo8GbnDfg="
 if-match: "I82YRPyDtSi45r0Ps/eo8GbnDfg="
 ```
 
-<img src="https://gitee.com/CwdyBic/myBlog/raw/master/assets/http/性能HTTP头信息化/If-Match​.png" height="500px" />
+<img src="https://github.com/zygg1512/myBlog/raw/master/assets/http/性能HTTP头信息化/If-Match​.png" height="500px" />
 
 ## 推送缓存
 HTTP/2.0中设计了新的缓存方式，服务器推送（Push Server）。有别于强制缓存和协商缓存，属于推送缓存。
