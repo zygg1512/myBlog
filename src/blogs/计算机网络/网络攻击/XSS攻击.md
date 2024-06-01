@@ -16,7 +16,7 @@
 通常情况下，主要有**存储型 XSS 攻击**、**反射型 XSS 攻击**和**基于 DOM 的 XSS 攻击**三种方式来注入恶意脚本
 
 ### 存储型 XSS 攻击
-<img src="https://github.com/zygg1512/myBlog/raw/master/images/http/网络攻击/存储型XSS.webp" height="300px" />
+<img src="https://github.com/zygg1512/myBlog/raw/master/images/计算机网络/网络攻击/存储型XSS.webp" height="300px" />
 
 通过上图，我们可以看出存储型 XSS 攻击大致需要经过如下步骤：
 - 首先黑客利用站点漏洞将一段恶意 JavaScript 代码提交到网站的数据库中
