@@ -54,7 +54,7 @@ function generatorsideItems(root: string): SidebarItem[] {
             sidebarItems.push(sidebarItem)
         } else if (computedFileExtension(file) === 'md') {
             const sidebarItem: SidebarItem = {
-                text: file,
+                text: file.replace(/\.md/, ''),
                 link: `/${root}/${file}`
             }
             sidebarItems.push(sidebarItem)
