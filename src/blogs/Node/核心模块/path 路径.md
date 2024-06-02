@@ -1,4 +1,5 @@
-# path 模块
+# path 路径
+[path 路径 | Node.js v18 文档](https://nodejs.cn/dist/latest-v18.x/docs/api/path.html)
 ## Node 中的路径分类
 node 中的路径大致分 5 类
 

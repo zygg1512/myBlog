@@ -1,4 +1,4 @@
-# children_process
+# children_process 子进程
 [child_process 子进程 | Node.js v18 文档](https://nodejs.cn/dist/latest-v18.x/docs/api/child_process.html)
 ## 创建异步子进程
 child_process 模块提供了以下 4 个方法用于创建异步子进程，**并且每一种方法都有对应的同步版本**：
@@ -40,7 +40,8 @@ console.log('test1 输出...');
 
 差异列表如下：
 
-![image.png](https://cdn.nlark.com/yuque/0/2023/png/26943751/1690072278361-256d90a3-1721-4f12-9d9f-a4329d6b3690.png#averageHue=%23cecece&clientId=ucb1f8c75-0d1e-4&from=paste&height=289&id=ue0c62665&originHeight=578&originWidth=1440&originalType=binary&ratio=2&rotation=0&showTitle=false&size=132481&status=done&style=none&taskId=u295abffd-2bf3-4baf-a88c-4fae4b26a8f&title=&width=720)
+<img src="https://github.com/zygg1512/myBlog/raw/master/images/Node/child_process方法差异.png" height="300px" />
+
 ## 子进程列表
 ### child_process.exec()
 #### 基本语法
