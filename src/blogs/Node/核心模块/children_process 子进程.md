@@ -40,7 +40,7 @@ console.log('test1 输出...');
 
 差异列表如下：
 
-<img src="https://github.com/zygg1512/myBlog/raw/master/images/Node/child_process方法差异.png" height="300px" />
+<img src="https://github.com/zygg1512/myBlog/raw/master/images/Node/核心模块/child_process方法差异.png" height="300px" />
 
 ## 子进程列表
 ### child_process.exec()
