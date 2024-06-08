@@ -29,7 +29,7 @@ function generatorSideBars(root): SidebarBars {
         const route = `/${root}/${file}/`
         sideBars[route] = [
             {
-                text: file,
+                text: processFileame(file),
                 items: generatorsideItems(`${root}/${file}`)
             }
         ]
@@ -47,14 +47,14 @@ function generatorsideItems(root: string): SidebarItem[] {
         if (isDir) {
             const items = generatorsideItems(`${root}/${file}`)
             const sidebarItem: SidebarItem = {
-                text: file,
+                text: processFileame(file),
                 items,
                 collapsed: true
             }
             sidebarItems.push(sidebarItem)
         } else if (computedFileExtension(file) === 'md') {
             const sidebarItem: SidebarItem = {
-                text: file.replace(/\.md/, ''),
+                text: processFileame(file),
                 link: `/${root}/${file}`
             }
             sidebarItems.push(sidebarItem)
@@ -65,4 +65,9 @@ function generatorsideItems(root: string): SidebarItem[] {
 function computedFileExtension(file) {
     return file.slice(file.lastIndexOf('.') + 1)
 }
+
+function processFileame(fileName: string): string {
+    return fileName.replace(/^[0-9]\.(.*?)(\.md)*$/, '$1').trim()
+}
+
 export default generatorSideBars

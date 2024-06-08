@@ -12,7 +12,7 @@ hero:
 features:
 
     - title: Node
-      link: /blogs/Node/package配置项/1. package配置项.md
+      link: /blogs/Node/1. 常见概念/1. 基础概念.md
     - title: Service
       link: /blogs/Service/Docker/Docker 基本用法/1. Docker概述.md
     - title: V8引擎原理
