@@ -8,7 +8,7 @@ generatorHomePages(sidebar)
 export default defineConfig({
     title: 'MyBlog',
     description: 'Blog For Zygg',
-    head: [['link', { rel: 'icon', href: '/favicon.ico' }]],
+    head: [['link', { rel: 'icon', href: '/myBlog/favicon.ico' }]],
     base: '/myBlog/',
     outDir: resolve(__dirname, '../static/dist'),
     cacheDir: resolve(__dirname, '../static/cache'),

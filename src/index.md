@@ -19,6 +19,8 @@ features:
       link: /blogs/V8引擎原理/JavaScript设计思想/1. 对象设计思想.md
     - title: 前端基础
       link: /blogs/前端基础/JavaScript/Web Worker.md
+    - title: 工程化
+      link: /blogs/工程化/包管理工具/1. NPM/1. NPM 命令.md
     - title: 常用命令
       link: /blogs/常用命令/Linux/文件命令.md
     - title: 浏览器原理

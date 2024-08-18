@@ -62,12 +62,12 @@ function generatorsideItems(root: string): SidebarItem[] {
     }
     return sidebarItems
 }
-function computedFileExtension(file) {
+function computedFileExtension(file: string) {
     return file.slice(file.lastIndexOf('.') + 1)
 }
 
 function processFileame(fileName: string): string {
-    return fileName.replace(/^[0-9]\.(.*?)(\.md)*$/, '$1').trim()
+    return fileName.replace(/[0-9]*\.*\s*(.*?)(\.md)*$/, '$1').trim()
 }
 
 export default generatorSideBars
