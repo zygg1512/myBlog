@@ -1,11 +1,11 @@
-import { defineConfig } from 'vitepress'
 import generatorSideBars from './scripts/generatorSideBars'
 import generatorHomePages from './scripts/generatorHomePages'
+import { withMermaid } from 'vitepress-plugin-mermaid'
 import { resolve } from 'path'
 const sidebar = generatorSideBars('blogs')
 generatorHomePages(sidebar)
 
-export default defineConfig({
+export default withMermaid({
     title: 'MyBlog',
     description: 'Blog For Zygg',
     head: [['link', { rel: 'icon', href: '/myBlog/favicon.ico' }]],
@@ -15,6 +15,10 @@ export default defineConfig({
     srcDir: 'src',
     srcExclude: ['**/.DS_Store'],
     cleanUrls: true,
+    mermaid: {},
+    mermaidPlugin: {
+        class: 'mermaid'
+    },
     themeConfig: {
         logo: '/logo.png',
         sidebar,
